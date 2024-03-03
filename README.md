@@ -19,5 +19,5 @@ This project is licensed under the GNU General Public License which means that t
 
 Since all folders with the binaries are excluded from the project you might want to compile them yourself. You can do it by running the following command:
 ```bash
-flutter create -platform=<pltform_name(linux|ios|macos|android|web|windows)>
+flutter create -platform=<platform_name(linux|ios|macos|android|web|windows)>
 ```
