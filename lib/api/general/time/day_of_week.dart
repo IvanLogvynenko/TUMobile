@@ -12,7 +12,7 @@ enum DayOfWeek {
 
   factory DayOfWeek.byDate(Date date) {
     DateTime dateTime =
-        DateTime.parse("${date.getYear()}-${date.getMonth()}-${date.getDay()}");
+        DateTime.parse(date.toString("-"));
     switch (dateTime.weekday) {
       case DateTime.monday:
         return DayOfWeek.monday;

@@ -1,13 +1,13 @@
-import 'dart:io';
-
 import 'package:tumobile/api/general/requests/login_status.dart';
 
-class Session {
+base class Session {
   LoginStatus _loginStatus = LoginStatus.unstated;
-  String? _id;
+  String? _login, _password;
+  
 
   Session.copy(Session session) {
     _loginStatus = session._loginStatus;
-    _id = session._id;
+    _login = session._login;
+    _password = session._password;
   }
 }

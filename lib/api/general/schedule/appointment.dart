@@ -9,19 +9,23 @@ class Appointment {
   final Place? _place;
   final String? _description;
   final String? _info;
+
   Appointment.empty()
-      : _begin = Time(),
-        _end = Time(),
+      : _begin = Time.empty(),
+        _end = Time.empty(),
         _name = "",
-        _place = Place(),
+        _place = Place.empty(),
         _description = "",
         _info = "";
+
   Appointment(this._begin, this._end, this._name, this._place, this._info,
       [this._description = ""]);
-  Time getTimeOfBegin() => _begin!;
-  Time getDuration() => Time.byMinutes(_begin!.getDifferenceInMinutes(_end!));
-  String getName() => _name!;
-  Place getPlace() => _place!;
-  String getDescription() => _description!;
-  String getInfo() => _info!;
+
+  Time get timeOfBegin => _begin!;
+  Time get timeOfEnd => _end!;
+  Time get duration => _begin! - _end!;
+  String get name => _name!;
+  Place get place => _place!;
+  String get description => _description!;
+  String get info => _info!;
 }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'package:scheduletum/api/http_requests/request.dart';
-import 'package:tumobile/widgets/app_body.dart';
 
 void main() {
   runApp(const MainApp());

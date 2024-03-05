@@ -3,6 +3,8 @@ enum TimeRange {
   week('w');
 
   final String _value;
+
   const TimeRange(this._value);
-  String getValue() => _value;
+
+  String get value => _value;
 }

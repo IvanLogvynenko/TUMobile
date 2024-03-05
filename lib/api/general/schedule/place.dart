@@ -1,10 +1,13 @@
 class Place {
   final String? _name;
-  final String _link;
-  Place()
+  final String? _link;
+
+  Place.empty()
       : _name = "",
         _link = "";
-  Place.full(this._name, this._link);
-  getName() => _name;
-  getlink() => _link;
+
+  Place(this._name, this._link);
+
+  String get name => _name!;
+  String get link => _link!;
 }
