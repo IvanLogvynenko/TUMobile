@@ -16,8 +16,4 @@ abstract interface class Client {
   Future<Schedule<T>> getCalendar<T>();
 
   void dispose();
-  //init
-  //login
-  //logout
-  //get calendar
 }
