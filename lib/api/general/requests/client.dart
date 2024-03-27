@@ -1,19 +1,18 @@
-import 'package:tumobile/api/general/requests/session.dart';
 import 'package:tumobile/api/general/schedule/schedule.dart';
 
+/*
+ * All functions must return a Future
+ * If you don't find it necessary, you can go f*ck yourself,
+ * because even if you don't use asyncronious code in your implementation, 
+ * others might, so we are to do it this way.
+*/
 abstract interface class Client {
-  final Session? _session;
+  Future<void> init();
 
-  Client.empty() : _session = Session.empty();
-
-  Session get session => _session!;
-
-  void init();
-
-  void login();
-  void logout();
+  Future<void> login();
+  Future<void> logout();
 
   Future<Schedule<T>> getCalendar<T>();
 
-  void dispose();
+  Future<void> dispose();
 }

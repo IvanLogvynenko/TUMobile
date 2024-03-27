@@ -90,10 +90,10 @@ packages:
     dependency: "direct dev"
     description:
       name: flutter_lints
-      sha256: e2a421b7e59244faef694ba7b30562e489c2b489866e505074eb005cd7060db7
+      sha256: "9e8c3858111da373efc5aa341de011d9bd23e2c5c5e0c62bccf32438e192d7b1"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.1"
+    version: "3.0.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -111,10 +111,10 @@ packages:
     dependency: "direct main"
     description:
       name: google_fonts
-      sha256: "5b1726fee554d1cc9db1baef8061b126567ff0a1140a03ed7de936e62f2ab98b"
+      sha256: b1ac0fe2832c9cc95e5e88b57d627c5e68c223b9657f4b96e1487aa9098c7b82
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.0"
+    version: "6.2.1"
   html:
     dependency: "direct main"
     description:
@@ -195,6 +195,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.0"
+  mutex:
+    dependency: "direct main"
+    description:
+      name: mutex
+      sha256: "8827da25de792088eb33e572115a5eb0d61d61a3c01acbc8bcbe76ed78f1a1f2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
   path:
     dependency: transitive
     description:
@@ -348,18 +356,18 @@ packages:
     dependency: transitive
     description:
       name: web
-      sha256: "1d9158c616048c38f712a6646e317a3426da10e884447626167240d45209cbad"
+      sha256: "97da13628db363c635202ad97068d47c5b8aa555808e7a9411963c533b449b27"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.0"
+    version: "0.5.1"
   win32:
     dependency: transitive
     description:
       name: win32
-      sha256: "464f5674532865248444b4c3daca12bd9bf2d7c47f759ce2617986e7229494a8"
+      sha256: "8cb58b45c47dcb42ab3651533626161d6b67a2921917d8d429791f76972b3480"
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.0"
+    version: "5.3.0"
   xdg_directories:
     dependency: transitive
     description:
@@ -370,4 +378,4 @@ packages:
     version: "1.0.4"
 sdks:
   dart: ">=3.3.0 <4.0.0"
-  flutter: ">=3.10.0"
+  flutter: ">=3.19.2"
