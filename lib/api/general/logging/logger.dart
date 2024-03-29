@@ -15,16 +15,18 @@ class Logger {
   static final _queueLock = Mutex();
   static bool _shutdown = false;
 
-  Logger._internal();
+  String? _path;
+  LoggerMode _mode = LoggerMode.unstated;
+  Logger._internal(this._path, this._mode);
 
-  factory Logger() {
-    _instance ??= Logger._internal();
+  factory Logger([String? path, LoggerMode mode = LoggerMode.unstated]) {
+    _instance ??= Logger._internal(path, mode);
     return _instance!;
   }
-  factory Logger.empty() => Logger._internal();
+  factory Logger.empty() => Logger._internal(null, LoggerMode.unstated);
 
   void log(String message) => logLog(Log(message));
-  void logLog(Log log) async  {
+  void logLog(Log log) async {
     await _queueLock.acquire();
     _messages.add(log);
     _queueLock.release();
@@ -33,23 +35,27 @@ class Logger {
   Future<void> _thread() async {
     var file = File(LoggerConfiguration.logFilePath);
     while (!_shutdown) {
-      await Logger._queueLock.acquire();
-      while (Logger._messages.isNotEmpty) {
+      await _queueLock.acquire();
+      while (_messages.isNotEmpty) {
+        String logOutput = _messages
+            .removeFirst()
+            .print(logPath: _path != null ? _path! : " >>> ", mode: _mode);
+
         if (LoggerConfiguration.writeToConsole) {
           // ignore: avoid_print
-          print(Logger._messages.first.print(mode: LoggerMode.full));
+          print(logOutput);
         }
         if (LoggerConfiguration.writeToFile) {
-          await file.writeAsString(Logger._messages.first.print());
+          await file.writeAsString(logOutput);
         }
-        Logger._messages.removeFirst();
       }
-      Logger._queueLock.release();
+      _queueLock.release();
     }
   }
 
-  void start() {
+  Logger start() {
     _thread();
+    return this;
   }
 
   void tryStop() {
@@ -62,14 +68,12 @@ class Logger {
     _shutdown = true;
   }
 
-  Future<void> flush() async {
-    var empty = true;
-    do {
-      await Logger._queueLock.acquire();
-      empty = Logger._messages.isEmpty;
-      Logger._queueLock.release();
-      sleep(const Duration(milliseconds: 1));
-    } while (!empty);
+  void flush() async {
+    while (true) {
+      await _queueLock.acquire();
+      if (_messages.isEmpty) break;
+      _queueLock.release();
+    }
     stop();
   }
 }

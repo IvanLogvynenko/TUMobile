@@ -15,7 +15,7 @@ class Log {
   Log(this._message) : _timeOfCreation = DateTime.now();
 
   String _printDate(DateTime date) =>
-      '${date.hour}:${date.minute}:${date.second}';
+      '${date.hour}:${date.minute}:${date.second}.${date.millisecond}';
 
   @override
   String toString() {
@@ -25,10 +25,10 @@ class Log {
   String print({String logPath = "", LoggerMode mode = LoggerMode.full}) {
     switch (mode) {
       case LoggerMode.debug:
-        return '$logPath >>> $_message!';
+        return '$logPath >>> \t$_message!';
       case LoggerMode.full:
         return '$logPath >>> '
-            '${_printDate(_timeOfCreation!)} -> ${_printDate(DateTime.now())} '
+            '${_printDate(_timeOfCreation!)} -> ${_printDate(DateTime.now())} \t'
             '$_message';
       case LoggerMode.info:
         return ' >>> $_message';

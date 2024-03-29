@@ -1,13 +1,12 @@
 import 'dart:io';
 
-// import 'package:logging/logging.dart';
-// import 'package:tumobile/api/general/logging/loggable.dart';
+import 'package:tumobile/api/general/logging/logger.dart';
 import 'package:tumobile/api/general/requests/client.dart';
 import 'package:tumobile/api/general/requests/language.dart';
 import 'package:tumobile/api/general/requests/session.dart';
 import 'package:tumobile/api/general/schedule/schedule.dart';
 
-class TUMClient implements /*Loggable,*/ Client {
+class TUMClient implements Client {
   final _ctx = "${String.fromCharCode(36)}ctx";
   final _host = "https://campus.tum.de/tumonline";
 
@@ -37,6 +36,7 @@ class TUMClient implements /*Loggable,*/ Client {
 
   @override
   Future<void> init() async {
+    Logger logger = Logger();
     _httpClient = HttpClient();
     print("TUMClient init done");
     HttpClientRequest clientRequest = await _httpClient!
