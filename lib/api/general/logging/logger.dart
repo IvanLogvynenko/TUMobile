@@ -25,7 +25,10 @@ class Logger {
   }
   factory Logger.empty() => Logger._internal(null, LoggerMode.unstated);
 
-  void log(String message) => logLog(Log(message));
+  // ignore: avoid_print
+  void log(String message) => print(Log(message)
+      .print(logPath: _path != null ? _path! : " >>> ", mode: _mode));
+  // void log(String message) => logLog(Log(message));
   void logLog(Log log) async {
     await _queueLock.acquire();
     _messages.add(log);

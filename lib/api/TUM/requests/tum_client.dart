@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:tumobile/api/general/logging/logger.dart';
-import 'package:tumobile/api/general/requests/client.dart';
+import 'package:tumobile/api/general/requests/iclient.dart';
 import 'package:tumobile/api/general/requests/language.dart';
 import 'package:tumobile/api/general/requests/session.dart';
 import 'package:tumobile/api/general/schedule/schedule.dart';
 
-class TUMClient implements Client {
+class TUMClient implements IClient {
   final _ctx = "${String.fromCharCode(36)}ctx";
   final _host = "https://campus.tum.de/tumonline";
 
@@ -21,64 +22,83 @@ class TUMClient implements Client {
   TUMClient.empty()
       : _session = null,
         _httpClient = null;
-
   TUMClient()
       : _session = Session.empty(),
         _httpClient = null;
-
   TUMClient.fromSession(Session session)
       : _session = session,
         _httpClient = HttpClient();
-
   TUMClient.byCredentials(String username, String password)
       : _session = Session.byCreds(username, password),
         _httpClient = HttpClient();
 
   @override
   Future<void> init() async {
-    Logger logger = Logger();
+    Logger logger = Logger("TUMClient.init");
     _httpClient = HttpClient();
-    print("TUMClient init done");
+    logger.log("TUMClient init done");
     HttpClientRequest clientRequest = await _httpClient!
         .getUrl(Uri.parse("$_host/pl/ui/$_ctx/wbOAuth2.session?language=de"));
-    print("requested");
-    print(clientRequest);
+    logger.log("requested");
+    logger.log(clientRequest.toString());
     HttpClientResponse clientResponse = await clientRequest.close();
-    print("Client response");
-    print(clientResponse.statusCode);
-    print(clientResponse.cookies.length);
+    logger.log("Client response");
+    logger.log(clientResponse.statusCode.toString());
+    logger.log(clientResponse.cookies.length.toString());
     for (var item in clientResponse.cookies) {
-      print("parsing cookies");
+      logger.log("parsing cookies");
       if (item.name == "PSESSIONID") {
         _session!.cookies = clientResponse.cookies;
-        print("setting cookies");
+        logger.log("setting cookies");
         break;
       }
     }
   }
 
   @override
-  Future<void> login() {
+  void setCredentials(String username, String password) {
+    _session!.username = username;
+    _session!.password = password;
+  }
+
+  Future<String> getNewStateWrapper() async {
+    HttpClientRequest clientRequest =
+        await _httpClient!.postUrl(Uri.parse("$_host/ee/rest/auth/user"));
+    clientRequest.cookies.addAll(_session!.cookies);
+    HttpClientResponse clientResponse = await clientRequest.close();
+    return clientResponse.transform(utf8.decoder).join();
+  }
+
+  @override
+  void login() async {
+    HttpClientRequest clientRequest = await _httpClient!
+        .postUrl(Uri.parse("$_host/pl/ui/$_ctx/wbOAuth2.approve?"
+            "pConfirm=X"
+            "&pPassword=${_session!.password}"
+            "&pSkipOauth2=F"
+            // "&pStateWrapper=${await _getNewStateWrapper()}"
+            "&pUsername=${_session!.username}"));
+    clientRequest.cookies.addAll(_session!.cookies);
+    HttpClientResponse clientResponse = await clientRequest.close();
+    _session!.cookies = clientResponse.cookies;
+  }
+
+  @override
+  void logout() {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> logout() {
+  Schedule<T> getCalendar<T>() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Schedule<T>> getCalendar<T>() {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> dispose() {
+  void dispose() {
     _session!.close();
     _httpClient!.close();
     _session = null;
     _httpClient = null;
-    return Future.value(null);
   }
 
   Session get session => _session!;
@@ -127,60 +147,5 @@ class TUMClient implements Client {
 // import 'package:tumobile/api/general/requests/exceptions/failed_to_get_session_id.dart';
 // import 'package:tumobile/api/general/requests/session.dart';
 
-// class Request {
-//   static const String host = "https://campus.tum.de";
-//   final _ctx = "${String.fromCharCode(36)}ctx";
 
-//   static Request? _instance;
 
-//   Session? _session;
-
-//   factory Request() {
-//     _instance ??= Request._createInstance();
-//     return _instance!;
-//   }
-//   Request._createInstance() : _session = Session();
-
-//   Session getSession() {
-//     return _session!;
-//   }
-
-//   Future<Session> startNewSession() async {
-//     HttpClient client = HttpClient();
-//     HttpClientRequest clientRequest = await client.getUrl(
-//         Uri.parse("$host/tumonline/pl/ui/$_ctx/wbOAuth2.session?language=de"));
-//     HttpClientResponse clientResponse = await clientRequest.close();
-//     for (var item in clientResponse.cookies) {
-//       if (item.name == "PSESSIONID") {
-//         _instance!._session = Session.byID(item.value);
-//         return _instance!._session!;
-//       }
-//     }
-//     throw FailedToGetSessionID();
-//   }
-
-//   Future<Session> loginInSystem(String login, String password) async {
-//     XmlParser parser = XmlParser();
-//     HttpClient client = HttpClient();
-//     HttpClientRequest clientRequest = await client.postUrl(Uri.parse(
-//         "$host/tumonline/pl/ui/$_ctx/wbOAuth2.approve?"
-//         "pConfirm=X"
-//         "&pPassword=$password"
-//         "&pSkipOauth2=F"
-//         "&pStateWrapper=${parser.parseStateWrapper(await _getNewStateWrapper())}"
-//         "&pUsername=$login"));
-//     clientRequest.cookies.addAll(_session!.getCookies());
-//     HttpClientResponse clientResponse = await clientRequest.close();
-//     _session!.setCookies(clientResponse.cookies);
-//     return _session!;
-//   }
-
-//   Future<String> _getNewStateWrapper() async {
-//     HttpClient client = HttpClient();
-//     Uri url = Uri.parse("$host/tumonline/ee/rest/auth/user");
-//     HttpClientRequest clientRequest = await client.postUrl(url);
-//     clientRequest.cookies.addAll(_session!.getCookies());
-//     HttpClientResponse clientResponse = await clientRequest.close();
-//     return clientResponse.transform(utf8.decoder).join();
-//   }
-// }

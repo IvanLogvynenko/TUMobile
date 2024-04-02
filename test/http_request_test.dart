@@ -1,12 +1,12 @@
-// ignore_for_file: avoid_print
-
 import 'package:tumobile/api/TUM/requests/tum_client.dart';
-// import 'package:tumobile/api/general/requests/client.dart';
+import 'package:tumobile/api/general/logging/logger.dart';
+import 'package:tumobile/api/general/logging/logger_mode.dart';
 
 void main() async {
+  Logger logger = Logger("http_client_test", LoggerMode.full).start();
   TUMClient client = TUMClient();
-  print("Created client");
+  logger.log("Created client");
   await client.init();
-  print("Initialized client");
-  print(client.session.cookies);
+  logger.log("Initialized client");
+  logger.log(await client.getNewStateWrapper());
 }

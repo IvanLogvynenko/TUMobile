@@ -39,10 +39,8 @@ base class Session {
   }
   set password(String value) => _password = value;
 
-  void setSredentials(String username, String password) {
-    _username = username;
-    _password = password;
-  }
+  String get username => _username!;
+  String get password => _password!;
 
   void close() {
     _cookies!.clear();
