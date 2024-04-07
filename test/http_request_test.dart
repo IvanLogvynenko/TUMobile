@@ -11,7 +11,7 @@ void main() async {
   logger.log("Created client");
   await client.init();
   logger.log("Initialized client");
-  client.setCredentials(/*sensetive data */);
+  client.setCredentials("go98tug", "21!Lnva1204");
   await client.login();
   Schedule sch = await client.getCalendar(DateTime.parse("20240404"));
   File file = File("tmp/index.html");
