@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:html/parser.dart';
 import 'package:tumobile/api/general/logging/logger.dart';
 import 'package:tumobile/api/general/requests/iclient.dart';
 import 'package:tumobile/api/general/requests/language.dart';
 import 'package:tumobile/api/general/requests/session.dart';
 import 'package:tumobile/api/general/schedule/schedule.dart';
+import 'package:tumobile/api/general/schedule/time_range.dart';
 
 class TUMClient implements IClient {
   final _ctx = "${String.fromCharCode(36)}ctx";
@@ -61,36 +63,63 @@ class TUMClient implements IClient {
     _session!.password = password;
   }
 
-  Future<String> getNewStateWrapper() async {
+  Future<String> _getNewStateWrapper() async {
     HttpClientRequest clientRequest =
         await _httpClient!.postUrl(Uri.parse("$_host/ee/rest/auth/user"));
     clientRequest.cookies.addAll(_session!.cookies);
     HttpClientResponse clientResponse = await clientRequest.close();
-    return clientResponse.transform(utf8.decoder).join();
+    String responceData = await clientResponse.transform(utf8.decoder).join();
+    List<String> splitted = responceData.split("authEndpointUrl>");
+    for (var item in splitted[1].split("&amp;")) {
+      if (item.startsWith("pStateWrapper")) return item.substring(14);
+    }
+    return "";
   }
 
   @override
-  void login() async {
+  Future<void> login() async {
+    Logger logger = Logger("TUMCLient.login");
     HttpClientRequest clientRequest = await _httpClient!
         .postUrl(Uri.parse("$_host/pl/ui/$_ctx/wbOAuth2.approve?"
             "pConfirm=X"
             "&pPassword=${_session!.password}"
             "&pSkipOauth2=F"
-            // "&pStateWrapper=${await _getNewStateWrapper()}"
+            "&pStateWrapper=${await _getNewStateWrapper()}"
             "&pUsername=${_session!.username}"));
+    clientRequest.followRedirects = true;
+    print(clientRequest.cookies);
     clientRequest.cookies.addAll(_session!.cookies);
     HttpClientResponse clientResponse = await clientRequest.close();
     _session!.cookies = clientResponse.cookies;
+    logger.log("logged in");
   }
 
   @override
-  void logout() {
+  Future<void> logout() {
     throw UnimplementedError();
   }
 
   @override
-  Schedule<T> getCalendar<T>() {
-    throw UnimplementedError();
+  Future<Schedule> getCalendar<T>(DateTime dateTime,
+      [TimeRange timeRange = TimeRange.day, bool showAsList = false]) async {
+    // Logger logger = Logger("TUMClient.getCalendar");
+    HttpClientRequest clientRequest = await _httpClient!.getUrl(Uri.parse(
+        "https://campus.tum.de/tumonline/pl/ui/$_ctx;design=ca2;header=max;lang=de/wbKalender.cbPersonalKalender?"
+        "pDisplayMode=${timeRange.value}&"
+        "pDatum=${dateTime.day}.${dateTime.month}.${dateTime.year}&"
+        "pOrgNr=&pShowAsList=${showAsList ? 'T' : 'F'}&"
+        "pZoom=100&pNurStandardGrp="));
+    clientRequest.cookies.addAll(_session!.cookies);
+    HttpClientResponse clientResponse = await clientRequest.close();
+    final document =
+        HtmlParser(await clientResponse.transform(utf8.decoder).join()).parse();
+
+    String result = document
+        .querySelectorAll("div.cocal-events-gutter")
+        .map((e) => e.innerHtml)
+        .join();
+
+    return Schedule(result);
   }
 
   @override
@@ -106,21 +135,6 @@ class TUMClient implements IClient {
   Cookie getCookie(String cookieName) =>
       _session!.cookies.firstWhere((cookie) => cookie.name == cookieName);
 }
-
-// import 'dart:convert';
-// import 'dart:io';
-
-// import 'package:tumobile/api/general/requests/session.dart';
-// import 'package:tumobile/api/general/schedule/day.dart';
-// import 'package:tumobile/api/general/time/date.dart';
-// import 'package:tumobile/api/general/time/time_range.dart';
-
-// class DataRequest {
-
-//   Session? _session;
-
-//   DataRequest();
-//   DataRequest.bySession(this._session);
 
 //   Future<Day> getCalendar(Date date,
 //       [TimeRange timeRange = TimeRange.day, bool showAsList = false]) async {
@@ -139,13 +153,6 @@ class TUMClient implements IClient {
 //         await clientResponse.transform(utf8.decoder).join(), date);
 //   }
 // }
-
-// import 'dart:convert';
-// import 'dart:io';
-
-// import 'package:tumobile/api/general/data_parsing/xml_parser.dart';
-// import 'package:tumobile/api/general/requests/exceptions/failed_to_get_session_id.dart';
-// import 'package:tumobile/api/general/requests/session.dart';
 
 
 

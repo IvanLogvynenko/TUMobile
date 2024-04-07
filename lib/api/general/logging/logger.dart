@@ -57,7 +57,7 @@ class Logger {
   }
 
   Logger start() {
-    _thread();
+    // _thread();
     return this;
   }
 

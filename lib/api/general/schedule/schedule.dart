@@ -1,4 +1,4 @@
-class Schedule<T> {
-  T? data;
-  
+/*abstract interface */ class Schedule {
+  String data = "";
+  Schedule(this.data);
 }
