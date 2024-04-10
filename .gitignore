@@ -47,3 +47,4 @@ web/
 windows/
 
 tmp/
+test/http_request_test.dart
