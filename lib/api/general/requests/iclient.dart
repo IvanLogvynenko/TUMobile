@@ -1,5 +1,4 @@
-import 'package:tumobile/api/general/schedule/schedule.dart';
-import 'package:tumobile/api/general/schedule/time_range.dart';
+import 'package:tumobile/api/general/schedule/ischedule.dart';
 
 abstract interface class IClient {
   Future<void> init();
@@ -7,8 +6,7 @@ abstract interface class IClient {
   Future<void> login();
   Future<void> logout();
 
-  Future<Schedule> getCalendar<T>(DateTime dateTime,
-      [TimeRange timeRange = TimeRange.day, bool showAsList = false]);
+  Future<ISchedule> getCalendar<T>(DateTime dateTime);
 
   void dispose();
 
