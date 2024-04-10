@@ -40,7 +40,7 @@ class MainApp extends StatelessWidget {
             backgroundColor: const Color(0xFFA7A1E8),
           ),
           body: const SafeArea(
-            child: Schedule(data: ,),
+            child: Placeholder(),
           ),
           bottomSheet: const SizedBox(
             height: 50.0,
