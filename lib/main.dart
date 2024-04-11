@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tumobile/api/TUM/requests/tum_client.dart';
 import 'package:tumobile/api/general/requests/iclient.dart';
-import 'package:tumobile/custom_widgets/schedule.dart';
+// import 'package:tumobile/custom_widgets/schedule.dart';
 
 void main() async {
   IClient client = TUMClient();

@@ -7,13 +7,15 @@ import 'package:tumobile/api/general/logging/logger.dart';
 import 'package:tumobile/api/general/requests/iclient.dart';
 import 'package:tumobile/api/general/requests/language.dart';
 import 'package:tumobile/api/general/requests/session.dart';
+import 'package:tumobile/api/general/schedule/appointment.dart';
 import 'package:tumobile/api/general/schedule/ischedule.dart';
+import 'package:tumobile/api/general/schedule/place.dart';
 
 class TUMClient implements IClient {
   final _ctx = "${String.fromCharCode(36)}ctx";
   final _host = "https://campus.tum.de/tumonline";
 
-  static bool _showAsList = true;
+  static const bool _showAsList = false;
 
   static const Set<Language> supportedLanguages = {
     Language.german,
@@ -89,7 +91,6 @@ class TUMClient implements IClient {
             "&pStateWrapper=${await _getNewStateWrapper()}"
             "&pUsername=${_session!.username}"));
     clientRequest.followRedirects = true;
-    print(clientRequest.cookies);
     clientRequest.cookies.addAll(_session!.cookies);
     HttpClientResponse clientResponse = await clientRequest.close();
     _session!.cookies = clientResponse.cookies;
@@ -101,8 +102,20 @@ class TUMClient implements IClient {
     throw UnimplementedError();
   }
 
+  DateTime _parseTime(String time, {DateTime? dateTime}) {
+    dateTime ??= DateTime.now();
+
+    String hour = time.split(":")[0];
+    String minute = time.split(":")[1];
+
+    DateTime result =
+        dateTime.copyWith(hour: int.parse(hour), minute: int.parse(minute));
+    return result;
+  }
+
   @override
   Future<ISchedule> getCalendar<T>(DateTime dateTime) async {
+    // getting data from server
     HttpClientRequest clientRequest = await _httpClient!.getUrl(Uri.parse(
         "$_host/pl/ui/$_ctx;design=ca2;header=max;lang=de/wbKalender.cbPersonalKalender?"
         "pDisplayMode=t&"
@@ -111,18 +124,44 @@ class TUMClient implements IClient {
         "pZoom=100&pNurStandardGrp="));
     clientRequest.cookies.addAll(_session!.cookies);
     HttpClientResponse clientResponse = await clientRequest.close();
+
+    //parsing data
     final document =
         HtmlParser(await clientResponse.transform(utf8.decoder).join()).parse();
 
-    ISchedule result = TUMSchedule();
-    print("xxx");
-    document.querySelectorAll("div.cocal-events-gutter").forEach((e) {
-      print("new: ${e.innerHtml}");
-      print("some");
-    });
-    print("fgf");
+    List<Appointment> result = List.empty(growable: true);
+    document.querySelectorAll("div.cocal-events-gutter").forEach((e) =>
+        e.querySelectorAll("div.cocal-ev-content").forEach((element) {
+          String time = element
+              .querySelector("div.cocal-ev-header>span.cocal-ev-time")!
+              .text;
+          String beginning = time.split("-")[0];
+          String end = time.split("-")[1];
 
-    return result;
+          String title = element
+              .querySelector("div.cocal-ev-header>span.cocal-ev-title")!
+              .text;
+
+          String place = element
+              .querySelector("div.cocal-ev-header>span.cocal-ev-location>a")!
+              .text;
+
+          String link = element
+              .querySelector("div.cocal-ev-header>span.cocal-ev-location>a")!
+              .attributes['href']!;
+          String info = element
+              .querySelector("div.cocal-ev-body>span.cocal-ev-desc")!
+              .text;
+
+          result.add(Appointment(
+              _parseTime(beginning, dateTime: dateTime),
+              _parseTime(end, dateTime: dateTime),
+              title,
+              Place(place, link),
+              info));
+        }));
+
+    return TUMSchedule(result, dateTime);
   }
 
   @override
