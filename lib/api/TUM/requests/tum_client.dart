@@ -6,6 +6,7 @@ import 'package:tumobile/api/TUM/schedule/tum_schedule.dart';
 import 'package:tumobile/api/general/logging/logger.dart';
 import 'package:tumobile/api/general/requests/iclient.dart';
 import 'package:tumobile/api/general/requests/language.dart';
+import 'package:tumobile/api/general/requests/login_status.dart';
 import 'package:tumobile/api/general/requests/session.dart';
 import 'package:tumobile/api/general/schedule/appointment.dart';
 import 'package:tumobile/api/general/schedule/ischedule.dart';
@@ -95,6 +96,7 @@ class TUMClient implements IClient {
     HttpClientResponse clientResponse = await clientRequest.close();
     _session!.cookies = clientResponse.cookies;
     logger.log("logged in");
+    _session!.loginStatus = LoginStatus.loggedIn;
   }
 
   @override
@@ -115,6 +117,9 @@ class TUMClient implements IClient {
 
   @override
   Future<ISchedule> getCalendar<T>(DateTime dateTime) async {
+    if (_session!.loginStatus != LoginStatus.loggedIn) {
+      throw Exception("User should be logged in");
+    }
     // getting data from server
     HttpClientRequest clientRequest = await _httpClient!.getUrl(Uri.parse(
         "$_host/pl/ui/$_ctx;design=ca2;header=max;lang=de/wbKalender.cbPersonalKalender?"
@@ -176,4 +181,9 @@ class TUMClient implements IClient {
 
   Cookie getCookie(String cookieName) =>
       _session!.cookies.firstWhere((cookie) => cookie.name == cookieName);
+
+  @override
+  bool get isLoggedIn => _session!.loginStatus == LoginStatus.loggedIn;
+  @override
+  bool get credentialsProvided => _session!.credentialsProvided;
 }

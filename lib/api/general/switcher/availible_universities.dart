@@ -1,0 +1,4 @@
+enum University{
+  technicalUniversityMunich,
+  unstated
+}

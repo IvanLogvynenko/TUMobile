@@ -37,10 +37,17 @@ base class Session {
       throw ArgumentError("Username cannot be changed.");
     }
   }
+
   set password(String value) => _password = value;
 
   String get username => _username!;
   String get password => _password!;
+
+  bool get credentialsProvided =>
+      _username != null &&
+      _password != null &&
+      _username != "" &&
+      _password != "";
 
   void close() {
     _cookies!.clear();

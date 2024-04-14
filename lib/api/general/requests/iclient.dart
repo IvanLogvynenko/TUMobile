@@ -11,4 +11,7 @@ abstract interface class IClient {
   void dispose();
 
   void setCredentials(String username, String password);
+
+  bool get isLoggedIn;
+  bool get credentialsProvided;
 }

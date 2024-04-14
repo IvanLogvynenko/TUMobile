@@ -48,3 +48,6 @@ windows/
 
 tmp/
 test/http_request_test.dart
+
+#tmp
+lib/api/general/custom_widgets/styles/
