@@ -1,16 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tumobile/api/general/custom_widgets/icolor_theme.dart';
-import 'package:tumobile/api/general/requests/iclient.dart';
+import 'package:tumobile/api/general/switcher/switcher.dart';
 import 'package:tumobile/pages/app_body.dart';
 
 class LoginPage extends StatelessWidget {
-  final IClient? client;
-  final ColorTheme? colorTheme;
+  final Switcher switcher;
 
-  const LoginPage(this.client, this.colorTheme, {super.key});
+  const LoginPage(this.switcher, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -69,13 +65,13 @@ class LoginPage extends StatelessWidget {
                     ),
                   );
                 } else {
-                  client!.setCredentials(username, password);
-                  await client!.login();
+                  switcher.client.setCredentials(username, password);
+                  await switcher.client.login();
                   Navigator.pushReplacement(
                     // ignore: use_build_context_synchronously
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AppBody(client, colorTheme),
+                      builder: (context) => AppBody(switcher),
                     ),
                   );
                 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tumobile/api/general/custom_widgets/icolor_theme.dart';
 import 'package:tumobile/api/general/logging/logger.dart';
 import 'package:tumobile/api/general/logging/logger_mode.dart';
 import 'package:tumobile/api/general/requests/iclient.dart';
@@ -15,20 +14,16 @@ void main() async {
   IClient client = switcher.client;
   await client.init();
 
-  runApp(MainApp(
-    client: client,
-    colorTheme: switcher.colorTheme,
-  ));
+  runApp(MainApp(switcher));
 }
 
 class MainApp extends StatelessWidget {
-  final IClient? client;
-  final ColorTheme? colorTheme;
+  final Switcher switcher;
 
-  const MainApp({super.key, this.client, this.colorTheme});
+  const MainApp(this.switcher, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: AppBody(client, colorTheme));
+    return MaterialApp(home: AppBody(switcher));
   }
 }

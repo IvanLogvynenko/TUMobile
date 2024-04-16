@@ -4,7 +4,8 @@ import 'package:tumobile/api/general/custom_widgets/icolor_theme.dart';
 import 'package:tumobile/api/general/requests/iclient.dart';
 import 'package:tumobile/api/general/switcher/availible_universities.dart';
 
-/// The purpose of this class is to pass right implementations to the main.dart
+/// The purpose of this class is to pass right implementations to the main.dart 
+/// and hold data sent between pages
 class Switcher {
   final University _university;
   late IClient _client;

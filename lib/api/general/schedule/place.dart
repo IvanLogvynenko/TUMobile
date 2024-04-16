@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 class Place {
-  final String? _name;
-  final String? _link;
+  final String _name;
+  final String _link;
 
   Place.empty()
       : _name = "",
@@ -22,6 +22,6 @@ class Place {
         '}';
   }
 
-  String get name => _name!;
-  String get link => _link!;
+  String get name => _name;
+  String get link => _link;
 }
