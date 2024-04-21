@@ -1,18 +1,20 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:html/parser.dart';
-import 'package:tumobile/api/TUM/schedule/tum_schedule.dart';
-import 'package:tumobile/api/general/logging/logger.dart';
-import 'package:tumobile/api/general/requests/iclient.dart';
-import 'package:tumobile/api/general/requests/language.dart';
-import 'package:tumobile/api/general/requests/login_status.dart';
-import 'package:tumobile/api/general/requests/session.dart';
-import 'package:tumobile/api/general/schedule/appointment.dart';
-import 'package:tumobile/api/general/schedule/ischedule.dart';
-import 'package:tumobile/api/general/schedule/place.dart';
 
-class TUMClient implements IClient {
+import 'package:tumobile/api/requests/language.dart';
+import 'package:tumobile/api/requests/login_status.dart';
+import 'package:tumobile/api/requests/session.dart';
+
+import 'package:tumobile/api/schedule/tum_schedule.dart';
+import 'package:tumobile/api/schedule/appointment.dart';
+import 'package:tumobile/api/schedule/ischedule.dart';
+import 'package:tumobile/api/schedule/place.dart';
+
+class Client {
   final _ctx = "${String.fromCharCode(36)}ctx";
   final _host = "https://campus.tum.de/tumonline";
 
@@ -26,46 +28,38 @@ class TUMClient implements IClient {
   Session? _session;
   HttpClient? _httpClient;
 
-  TUMClient.empty()
+  Client.empty()
       : _session = null,
         _httpClient = null;
-  TUMClient()
+  Client()
       : _session = Session.empty(),
         _httpClient = null;
-  TUMClient.fromSession(Session session)
+  Client.fromSession(Session session)
       : _session = session,
         _httpClient = HttpClient();
-  TUMClient.byCredentials(String username, String password)
+  Client.byCredentials(String username, String password)
       : _session = Session.byCreds(username, password),
         _httpClient = HttpClient();
 
-  @override
   Future<void> init() async {
-    Logger logger = Logger("TUMClient.init");
     _httpClient = HttpClient();
-    logger.log("TUMClient init done");
+    print("TUMClient init done");
     HttpClientRequest clientRequest = await _httpClient!
         .getUrl(Uri.parse("$_host/pl/ui/$_ctx/wbOAuth2.session?language=de"));
-    logger.log("requested");
-    logger.log(clientRequest.toString());
+    print("requested");
+    print(clientRequest.toString());
     HttpClientResponse clientResponse = await clientRequest.close();
-    logger.log("Client response");
-    logger.log(clientResponse.statusCode.toString());
-    logger.log(clientResponse.cookies.length.toString());
+    print("Client response");
+    print(clientResponse.statusCode.toString());
+    print(clientResponse.cookies.length.toString());
     for (var item in clientResponse.cookies) {
-      logger.log("parsing cookies");
+      print("parsing cookies");
       if (item.name == "PSESSIONID") {
         _session!.cookies = clientResponse.cookies;
-        logger.log("setting cookies");
+        print("setting cookies");
         break;
       }
     }
-  }
-
-  @override
-  void setCredentials(String username, String password) {
-    _session!.username = username;
-    _session!.password = password;
   }
 
   Future<String> _getNewStateWrapper() async {
@@ -81,9 +75,7 @@ class TUMClient implements IClient {
     return "";
   }
 
-  @override
   Future<void> login() async {
-    Logger logger = Logger("TUMCLient.login");
     HttpClientRequest clientRequest = await _httpClient!
         .postUrl(Uri.parse("$_host/pl/ui/$_ctx/wbOAuth2.approve?"
             "pConfirm=X"
@@ -95,11 +87,10 @@ class TUMClient implements IClient {
     clientRequest.cookies.addAll(_session!.cookies);
     HttpClientResponse clientResponse = await clientRequest.close();
     _session!.cookies = clientResponse.cookies;
-    logger.log("logged in");
+    print("logged in");
     _session!.loginStatus = LoginStatus.loggedIn;
   }
 
-  @override
   Future<void> logout() {
     throw UnimplementedError();
   }
@@ -115,7 +106,6 @@ class TUMClient implements IClient {
     return result;
   }
 
-  @override
   Future<ISchedule> getCalendar<T>(DateTime dateTime) async {
     if (_session!.loginStatus != LoginStatus.loggedIn) {
       throw Exception("User should be logged in");
@@ -169,7 +159,6 @@ class TUMClient implements IClient {
     return TUMSchedule(result, dateTime);
   }
 
-  @override
   void dispose() {
     _session!.close();
     _httpClient!.close();
@@ -177,13 +166,15 @@ class TUMClient implements IClient {
     _httpClient = null;
   }
 
+  void setCredentials(String username, String password) {
+    _session!.username = username;
+    _session!.password = password;
+  }
   Session get session => _session!;
 
   Cookie getCookie(String cookieName) =>
       _session!.cookies.firstWhere((cookie) => cookie.name == cookieName);
 
-  @override
   bool get isLoggedIn => _session!.loginStatus == LoginStatus.loggedIn;
-  @override
   bool get credentialsProvided => _session!.credentialsProvided;
 }

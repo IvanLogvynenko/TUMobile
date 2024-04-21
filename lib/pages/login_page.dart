@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tumobile/api/general/switcher/switcher.dart';
+import 'package:provider/provider.dart';
+import 'package:tumobile/api/requests/client.dart';
 import 'package:tumobile/pages/app_body.dart';
+import 'package:tumobile/providers/client_provider.dart';
 
 class LoginPage extends StatelessWidget {
-  final Switcher switcher;
-
-  const LoginPage(this.switcher, {super.key});
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final TextEditingController loginController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
+
+    var client = context.read<ClientProvider>().client;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -65,13 +68,13 @@ class LoginPage extends StatelessWidget {
                     ),
                   );
                 } else {
-                  switcher.client.setCredentials(username, password);
-                  await switcher.client.login();
+                  client.setCredentials(username, password);
+                  await client.login();
                   Navigator.pushReplacement(
                     // ignore: use_build_context_synchronously
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AppBody(switcher),
+                      builder: (context) => const AppBody(),
                     ),
                   );
                 }

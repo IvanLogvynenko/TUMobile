@@ -1,5 +1,5 @@
-import 'package:tumobile/api/general/schedule/appointment.dart';
-import 'package:tumobile/api/general/schedule/ischedule.dart';
+import 'package:tumobile/api/schedule/appointment.dart';
+import 'package:tumobile/api/schedule/ischedule.dart';
 
 class TUMSchedule implements ISchedule {
   List<Appointment> _appointments = List.empty(growable: true);

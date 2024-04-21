@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tumobile/api/general/schedule/ischedule.dart';
+import 'package:tumobile/api/schedule/ischedule.dart';
 
 class Schedule extends StatelessWidget {
   const Schedule({super.key, this.data});

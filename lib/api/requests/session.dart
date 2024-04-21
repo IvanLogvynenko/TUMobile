@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:tumobile/api/general/requests/login_status.dart';
+import 'package:tumobile/api/requests/login_status.dart';
 
 base class Session {
   LoginStatus loginStatus = LoginStatus.unstated;
@@ -31,11 +31,7 @@ base class Session {
     if (value == "") {
       throw ArgumentError("Username cannot be empty.");
     }
-    if (_username == null) {
-      _username = value;
-    } else {
-      throw ArgumentError("Username cannot be changed.");
-    }
+    _username = value;
   }
 
   set password(String value) => _password = value;
