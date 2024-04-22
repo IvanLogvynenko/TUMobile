@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
-import 'package:tumobile/api/schedule/ischedule.dart';
+import 'package:tumobile/api/schedule/schedule_data.dart';
 
 import 'package:tumobile/custom_widgets/footer.dart';
 import 'package:tumobile/custom_widgets/schedule.dart';
@@ -31,9 +30,9 @@ class AppBody extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: FutureBuilder<ISchedule>(
+        child: FutureBuilder<ScheduleData>(
           future: client.getCalendar(DateTime.now()),
-          builder: (BuildContext context, AsyncSnapshot<ISchedule> snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<ScheduleData> snapshot) {
             if (snapshot.hasData) {
               return Schedule(data: snapshot.data);
             } else {

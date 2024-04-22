@@ -9,9 +9,8 @@ import 'package:tumobile/api/requests/language.dart';
 import 'package:tumobile/api/requests/login_status.dart';
 import 'package:tumobile/api/requests/session.dart';
 
-import 'package:tumobile/api/schedule/tum_schedule.dart';
+import 'package:tumobile/api/schedule/schedule_data.dart';
 import 'package:tumobile/api/schedule/appointment.dart';
-import 'package:tumobile/api/schedule/ischedule.dart';
 import 'package:tumobile/api/schedule/place.dart';
 
 class Client {
@@ -42,6 +41,7 @@ class Client {
         _httpClient = HttpClient();
 
   Future<void> init() async {
+    if (_httpClient != null) return;
     _httpClient = HttpClient();
     print("TUMClient init done");
     HttpClientRequest clientRequest = await _httpClient!
@@ -106,7 +106,7 @@ class Client {
     return result;
   }
 
-  Future<ISchedule> getCalendar<T>(DateTime dateTime) async {
+  Future<ScheduleData> getCalendar<T>(DateTime dateTime) async {
     if (_session!.loginStatus != LoginStatus.loggedIn) {
       throw Exception("User should be logged in");
     }
@@ -156,7 +156,7 @@ class Client {
               info));
         }));
 
-    return TUMSchedule(result, dateTime);
+    return ScheduleData(result, dateTime);
   }
 
   void dispose() {

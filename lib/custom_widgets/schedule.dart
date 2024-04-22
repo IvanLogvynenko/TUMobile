@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tumobile/api/schedule/ischedule.dart';
+import 'package:tumobile/api/schedule/schedule_data.dart';
 
 class Schedule extends StatelessWidget {
   const Schedule({super.key, this.data});
 
-  final ISchedule? data;
+  final ScheduleData? data;
 
   @override
   Widget build(BuildContext context) {

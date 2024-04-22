@@ -1,20 +1,78 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:tumobile/api/requests/client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tumobile/pages/app_body.dart';
 import 'package:tumobile/providers/client_provider.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  bool rememberMe = false;
+  String username = '';
+  String password = '';
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _getValues();
+  }
+
+  void _getValues() async {
+    var prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey('rememberMe')) {
+      setState(() {
+        rememberMe = prefs.getBool('rememberMe')!;
+        if (rememberMe) {
+          if (prefs.containsKey('username')) {
+            username = prefs.getString('username')!;
+          }
+          if (prefs.containsKey('password')) {
+            password = prefs.getString('password')!;
+          }
+        }
+        _usernameController.text = username;
+        _passwordController.text = password;
+      });
+    } else {
+      prefs.setBool('rememberMe', false);
+      setState(() {
+        rememberMe = false;
+      });
+    }
+  }
+
+  void _saveValues() async {
+    var prefs = await SharedPreferences.getInstance();
+    if (rememberMe) {
+      prefs.setBool('rememberMe', rememberMe);
+      prefs.setString('username', username);
+      prefs.setString('password', password);
+    } else {
+      prefs.setBool("rememberMe", rememberMe);
+      prefs.remove('username');
+      prefs.remove('password');
+    }
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController loginController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-
     var client = context.read<ClientProvider>().client;
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -34,7 +92,7 @@ class LoginPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
-                      controller: loginController,
+                      controller: _usernameController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         helperText: "login",
@@ -47,20 +105,42 @@ class LoginPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
-                      controller: passwordController,
+                      obscureText: true,
+                      controller: _passwordController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         helperText: "password",
                       ),
                     ),
                   ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("Remember me"),
+                        Checkbox(
+                          value: rememberMe,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              rememberMe = value!;
+                            });
+                            _saveValues();
+                          },
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
             ElevatedButton(
               onPressed: () async {
-                String username = loginController.text;
-                String password = passwordController.text;
+                String username = _usernameController.text;
+                String password = _passwordController.text;
                 if (username == "" || password == "" || password.length < 8) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -68,6 +148,11 @@ class LoginPage extends StatelessWidget {
                     ),
                   );
                 } else {
+                  if (rememberMe) {
+                    var prefs = await SharedPreferences.getInstance();
+                    prefs.setString('username', username);
+                    prefs.setString('password', password);
+                  }
                   client.setCredentials(username, password);
                   await client.login();
                   Navigator.pushReplacement(

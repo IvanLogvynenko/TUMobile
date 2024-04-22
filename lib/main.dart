@@ -15,7 +15,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ClientProvider())
+        ChangeNotifierProvider(create: (context) => ClientProvider()),
       ],
       child: const MaterialApp(home: AppBody()),
     );
