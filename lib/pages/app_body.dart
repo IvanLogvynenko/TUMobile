@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'package:tumobile/schedule/view_model/schedule_data.dart';
+import 'package:tumobile/custom_widgets/header/header.dart';
 
 import 'package:tumobile/schedule/view/schedule.dart';
 
@@ -20,29 +19,36 @@ class AppBody extends StatelessWidget {
       return const LoginPage();
     }
 
+    DateTime today = DateTime.now();
+    DateTime tommorow = DateTime.now().add(const Duration(days: 2));
+
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            const Placeholder(
-              fallbackHeight: 200,
-              child: Center(child: Text("here will be header")),
+        child: CustomScrollView(
+          slivers: [
+            const SliverAppBar(
+              pinned: true,
+              floating: false,
+              expandedHeight: 200,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Header(),
+              ),
             ),
-            FutureBuilder<ScheduleData>(
-              future: client.getCalendar(DateTime.now()),
-              builder:
-                  (BuildContext context, AsyncSnapshot<ScheduleData> snapshot) {
-                if (snapshot.hasData) {
-                  return Schedule(data: snapshot.data);
-                } else if (snapshot.hasError) {
-                  return Text(snapshot.error.toString());
-                }
-                else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text("Heute"),
+                  ),
+                  Schedule(today),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text("Morgen"),
+                  ),
+                  Schedule(tommorow),
+                ],
+              ),
             ),
           ],
         ),

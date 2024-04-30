@@ -4,11 +4,9 @@ class Place {
   final String _name;
   final String _link;
 
-  Place.empty()
-      : _name = "",
-        _link = "";
-
-  Place(this._name, this._link);
+  Place([name = "", link = ""])
+      : _name = name,
+        _link = link;
 
   factory Place.fromJSON(String input) {
     final data = jsonDecode(input) as Map<String, dynamic>;

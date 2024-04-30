@@ -11,7 +11,7 @@ import 'package:tumobile/requests/model/login_status.dart';
 import 'package:tumobile/requests/model/session.dart';
 
 import 'package:tumobile/schedule/view_model/schedule_data.dart';
-import 'package:tumobile/schedule/model/appointment.dart';
+import 'package:tumobile/schedule/model/appointment_data.dart';
 import 'package:tumobile/schedule/model/place.dart';
 
 class Client {
@@ -107,7 +107,7 @@ class Client {
     return result;
   }
 
-  Future<ScheduleData> getCalendar<T>(DateTime dateTime) async {
+  Future<ScheduleData> getSchedule<T>(DateTime dateTime) async {
     if (_session!.loginStatus != LoginStatus.loggedIn) {
       throw Exception("User should be logged in");
     }
@@ -125,7 +125,7 @@ class Client {
     final document =
         HtmlParser(await clientResponse.transform(utf8.decoder).join()).parse();
 
-    List<Appointment> result = List.empty(growable: true);
+    List<AppointmentData> result = List.empty(growable: true);
     document.querySelectorAll("div.cocal-events-gutter").forEach(
         (e) => e.querySelectorAll("div.cocal-ev-content").forEach((element) {
               String time = element
@@ -149,7 +149,7 @@ class Client {
                   .querySelector("div.cocal-ev-body>span.cocal-ev-desc")!
                   .text;
 
-              result.add(Appointment(
+              result.add(AppointmentData(
                   _parseTime(beginning, dateTime: dateTime),
                   _parseTime(end, dateTime: dateTime),
                   title,

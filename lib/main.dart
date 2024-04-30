@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tumobile/color_theme/themes.dart';
 import 'package:tumobile/pages/app_body.dart';
 import 'package:tumobile/providers/client_provider.dart';
 
@@ -16,7 +17,11 @@ class MainApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => ClientProvider()),
       ],
-      child: const MaterialApp(home: AppBody()),
+      child: MaterialApp(
+        theme: Themes.lightTheme,
+        // darkTheme: Themes.darkTheme,
+        home: const AppBody(),
+      ),
     );
   }
 }

@@ -1,12 +1,12 @@
-import 'package:tumobile/schedule/model/appointment.dart';
+import 'package:tumobile/schedule/model/appointment_data.dart';
 
-class ScheduleData{
-  List<Appointment> _appointments = List.empty(growable: true);
+class ScheduleData {
+  List<AppointmentData> _appointments = List.empty(growable: true);
   final DateTime _date;
 
   ScheduleData(this._appointments, this._date);
   ScheduleData.empty() : _date = DateTime.now();
 
-  List<Appointment> get appointments => _appointments;
+  List<AppointmentData> get appointments => _appointments;
   DateTime get date => _date;
 }
