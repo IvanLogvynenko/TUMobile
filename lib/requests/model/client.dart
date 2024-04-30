@@ -126,37 +126,36 @@ class Client {
         HtmlParser(await clientResponse.transform(utf8.decoder).join()).parse();
 
     List<Appointment> result = List.empty(growable: true);
-    document.querySelectorAll("div.cocal-events-gutter").forEach((e) =>
-        e.querySelectorAll("div.cocal-ev-content").forEach((element) {
-          String time = element
-              .querySelector("div.cocal-ev-header>span.cocal-ev-time")!
-              .text;
-          String beginning = time.split("-")[0];
-          String end = time.split("-")[1];
+    document.querySelectorAll("div.cocal-events-gutter").forEach(
+        (e) => e.querySelectorAll("div.cocal-ev-content").forEach((element) {
+              String time = element
+                  .querySelector("div.cocal-ev-header>span.cocal-ev-time")!
+                  .text;
+              String beginning = time.split("-")[0];
+              String end = time.split("-")[1];
 
-          String title = element
-              .querySelector("div.cocal-ev-header>span.cocal-ev-title")!
-              .text;
+              String title = element
+                  .querySelector("div.cocal-ev-header>span.cocal-ev-title")!
+                  .text;
 
-          Element? divPlace = element
-              .querySelector("div.cocal-ev-header>span.cocal-ev-location>a");
-          String place = "";
-          if (divPlace != null) place = divPlace.text;
+              Element? divPlace = element.querySelector(
+                  "div.cocal-ev-header>span.cocal-ev-location>a");
+              Place place = Place.empty();
+              if (divPlace != null) {
+                place = Place(divPlace.text, divPlace.attributes["href"] ?? "");
+              }
 
-          String link = element
-              .querySelector("div.cocal-ev-header>span.cocal-ev-location>a")!
-              .attributes['href']!;
-          String info = element
-              .querySelector("div.cocal-ev-body>span.cocal-ev-desc")!
-              .text;
+              String info = element
+                  .querySelector("div.cocal-ev-body>span.cocal-ev-desc")!
+                  .text;
 
-          result.add(Appointment(
-              _parseTime(beginning, dateTime: dateTime),
-              _parseTime(end, dateTime: dateTime),
-              title,
-              Place(place, link),
-              info));
-        }));
+              result.add(Appointment(
+                  _parseTime(beginning, dateTime: dateTime),
+                  _parseTime(end, dateTime: dateTime),
+                  title,
+                  place,
+                  info));
+            }));
 
     return ScheduleData(result, dateTime);
   }

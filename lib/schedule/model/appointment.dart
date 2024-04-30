@@ -4,16 +4,16 @@ import 'dart:io';
 import 'package:tumobile/schedule/model/place.dart';
 
 class Appointment {
-  DateTime? _begin;
-  DateTime? _end;
-  String? _name;
-  Place? _place;
-  String? _description;
-  String? _info;
+  DateTime _begin;
+  DateTime _end;
+  String _name;
+  Place _place;
+  String _description;
+  String _info;
 
   Appointment.empty()
-      : _begin = null,
-        _end = null,
+      : _begin = DateTime.fromMicrosecondsSinceEpoch(0),
+        _end = DateTime.fromMicrosecondsSinceEpoch(0),
         _name = "",
         _place = Place.empty(),
         _description = "",
@@ -33,21 +33,21 @@ class Appointment {
   factory Appointment.fromJSONFile(File file) =>
       Appointment.fromJSON(file.readAsStringSync());
 
-  DateTime get timeOfBegin => _begin!;
-  DateTime get timeOfEnd => _end!;
+  DateTime get timeOfBegin => _begin;
+  DateTime get timeOfEnd => _end;
   DateTime get duration => DateTime.fromMicrosecondsSinceEpoch(
-      _begin!.microsecondsSinceEpoch - _end!.microsecondsSinceEpoch);
-  String get name => _name!;
-  Place get place => _place!;
-  String get description => _description!;
-  String get info => _info!;
+      _begin.microsecondsSinceEpoch - _end.microsecondsSinceEpoch);
+  String get name => _name;
+  Place get place => _place;
+  String get description => _description;
+  String get info => _info;
 
   String toJSON() {
     return '{\n'
-        '\t"beginning": "${_begin!.toIso8601String()}",\n'
-        '\t"ending": "${_end!.toIso8601String()}",\n'
+        '\t"beginning": "${_begin.toIso8601String()}",\n'
+        '\t"ending": "${_end.toIso8601String()}",\n'
         '\t"name": "$_name",\n'
-        '\t"place": ${_place!.toJSON()},\n'
+        '\t"place": ${_place.toJSON()},\n'
         '\t"info": "$_info",\n'
         '\t"description": "$_description"\n'
         '}';
