@@ -118,20 +118,15 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("Remember me"),
-                        Checkbox(
-                          value: rememberMe,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              rememberMe = value!;
-                            });
-                            _saveValues();
-                          },
-                        ),
-                      ],
+                    child: SwitchListTile.adaptive(
+                      title: const Text("Remember me"),
+                      value: rememberMe,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          rememberMe = value!;
+                        });
+                        _saveValues();
+                      },
                     ),
                   )
                 ],

@@ -3,15 +3,16 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
-import 'package:tumobile/api/requests/language.dart';
-import 'package:tumobile/api/requests/login_status.dart';
-import 'package:tumobile/api/requests/session.dart';
+import 'package:tumobile/requests/model/language.dart';
+import 'package:tumobile/requests/model/login_status.dart';
+import 'package:tumobile/requests/model/session.dart';
 
-import 'package:tumobile/api/schedule/schedule_data.dart';
-import 'package:tumobile/api/schedule/appointment.dart';
-import 'package:tumobile/api/schedule/place.dart';
+import 'package:tumobile/schedule/view_model/schedule_data.dart';
+import 'package:tumobile/schedule/model/appointment.dart';
+import 'package:tumobile/schedule/model/place.dart';
 
 class Client {
   final _ctx = "${String.fromCharCode(36)}ctx";
@@ -137,9 +138,10 @@ class Client {
               .querySelector("div.cocal-ev-header>span.cocal-ev-title")!
               .text;
 
-          String place = element
-              .querySelector("div.cocal-ev-header>span.cocal-ev-location>a")!
-              .text;
+          Element? divPlace = element
+              .querySelector("div.cocal-ev-header>span.cocal-ev-location>a");
+          String place = "";
+          if (divPlace != null) place = divPlace.text;
 
           String link = element
               .querySelector("div.cocal-ev-header>span.cocal-ev-location>a")!
@@ -170,6 +172,7 @@ class Client {
     _session!.username = username;
     _session!.password = password;
   }
+
   Session get session => _session!;
 
   Cookie getCookie(String cookieName) =>

@@ -1,4 +1,4 @@
-import 'package:tumobile/api/schedule/appointment.dart';
+import 'package:tumobile/schedule/model/appointment.dart';
 
 class ScheduleData{
   List<Appointment> _appointments = List.empty(growable: true);

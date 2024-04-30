@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tumobile/api/requests/client.dart';
+import 'package:tumobile/requests/model/client.dart';
 
 class ClientProvider extends ChangeNotifier {
   final Client _client;

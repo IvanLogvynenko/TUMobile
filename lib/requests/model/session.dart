@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:tumobile/api/requests/login_status.dart';
+import 'package:tumobile/requests/model/login_status.dart';
 
 base class Session {
   LoginStatus loginStatus = LoginStatus.unstated;

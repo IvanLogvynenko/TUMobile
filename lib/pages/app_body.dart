@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:tumobile/api/schedule/schedule_data.dart';
+import 'package:tumobile/schedule/view_model/schedule_data.dart';
 
-import 'package:tumobile/custom_widgets/footer.dart';
-import 'package:tumobile/custom_widgets/schedule.dart';
+import 'package:tumobile/schedule/view/schedule.dart';
 
 import 'package:tumobile/pages/login_page.dart';
 
@@ -22,30 +21,31 @@ class AppBody extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-          child: Text(
-            "Hi, ",
-          ),
-        ),
-      ),
       body: SafeArea(
-        child: FutureBuilder<ScheduleData>(
-          future: client.getCalendar(DateTime.now()),
-          builder: (BuildContext context, AsyncSnapshot<ScheduleData> snapshot) {
-            if (snapshot.hasData) {
-              return Schedule(data: snapshot.data);
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
+        child: Column(
+          children: [
+            const Placeholder(
+              fallbackHeight: 200,
+              child: Center(child: Text("here will be header")),
+            ),
+            FutureBuilder<ScheduleData>(
+              future: client.getCalendar(DateTime.now()),
+              builder:
+                  (BuildContext context, AsyncSnapshot<ScheduleData> snapshot) {
+                if (snapshot.hasData) {
+                  return Schedule(data: snapshot.data);
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            ),
+          ],
         ),
-      ),
-      bottomSheet: const SizedBox(
-        height: 75.0,
-        child: Footer(),
       ),
     );
   }

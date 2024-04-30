@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:tumobile/api/schedule/place.dart';
+import 'package:tumobile/schedule/model/place.dart';
 
 class Appointment {
   DateTime? _begin;
