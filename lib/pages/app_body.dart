@@ -18,37 +18,16 @@ class AppBody extends StatelessWidget {
     if (!client.credentialsProvided || !client.isLoggedIn) {
       return const LoginPage();
     }
-
     DateTime today = DateTime.now();
-    DateTime tommorow = DateTime.now().add(const Duration(days: 2));
+    // .subtract(const Duration(days: 5));
 
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            const SliverAppBar(
-              pinned: true,
-              floating: false,
-              expandedHeight: 200,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Header(),
-              ),
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text("Heute"),
-                  ),
-                  Schedule(today),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text("Morgen"),
-                  ),
-                  Schedule(tommorow),
-                ],
-              ),
+            const Header(),
+            SliverToBoxAdapter(
+              child: Schedule(today),
             ),
           ],
         ),

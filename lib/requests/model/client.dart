@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
+import 'package:xml/xml.dart';
 import 'dart:io';
 
 import 'package:html/dom.dart';
@@ -50,14 +51,14 @@ class Client {
     print("requested");
     print(clientRequest.toString());
     HttpClientResponse clientResponse = await clientRequest.close();
-    print("Client response");
+    // print("Client response");
     print(clientResponse.statusCode.toString());
-    print(clientResponse.cookies.length.toString());
+    // print(clientResponse.cookies.length.toString());
     for (var item in clientResponse.cookies) {
-      print("parsing cookies");
+      // print("parsing cookies");
       if (item.name == "PSESSIONID") {
         _session!.cookies = clientResponse.cookies;
-        print("setting cookies");
+        // print("setting cookies");
         break;
       }
     }
@@ -84,16 +85,35 @@ class Client {
             "&pSkipOauth2=F"
             "&pStateWrapper=${await _getNewStateWrapper()}"
             "&pUsername=${_session!.username}"));
-    clientRequest.followRedirects = true;
     clientRequest.cookies.addAll(_session!.cookies);
+    clientRequest.headers.forEach((name, values) => print("$name:$values"));
     HttpClientResponse clientResponse = await clientRequest.close();
     _session!.cookies = clientResponse.cookies;
+    if (clientResponse.statusCode == HttpStatus.found) {
+      String redirectUrl = clientResponse.headers["location"]![0];
+      clientResponse.drain();
+
+      var nextRequest = await _httpClient!.getUrl(Uri.parse(redirectUrl));
+
+      var nextResponse = await nextRequest.close();
+
+      _session!.authorisationToken = (jsonDecode(
+              await nextResponse.transform(const Latin1Decoder()).join())
+          as Map<String, dynamic>)["access_token"];
+    }
     print("logged in");
     _session!.loginStatus = LoginStatus.loggedIn;
   }
 
-  Future<void> logout() {
-    throw UnimplementedError();
+  Future<void> logout() async {
+    if (_session!.loginStatus != LoginStatus.loggedIn) {
+      throw Exception("User should be logged in");
+    }
+    HttpClientRequest clientRequest = await _httpClient!
+        .getUrl(Uri.parse("$_host/ee/rest/auth/generic/doLogout"));
+    clientRequest.cookies.addAll(_session!.cookies);
+    HttpClientResponse clientResponse = await clientRequest.close();
+    print(await clientResponse.transform(utf8.decoder).join());
   }
 
   DateTime _parseTime(String time, {DateTime? dateTime}) {
@@ -140,7 +160,7 @@ class Client {
 
               Element? divPlace = element.querySelector(
                   "div.cocal-ev-header>span.cocal-ev-location>a");
-              Place place = Place.empty();
+              Place place = Place();
               if (divPlace != null) {
                 place = Place(divPlace.text, divPlace.attributes["href"] ?? "");
               }
@@ -158,6 +178,32 @@ class Client {
             }));
 
     return ScheduleData(result, dateTime);
+  }
+
+  Future<String> getUsername() async {
+    HttpClientRequest clientRequest = await _httpClient!.getUrl(
+        Uri.parse("$_host/ee/rest/brm.lib.dtop.home/v1/desktop/profile"));
+    clientRequest.cookies.addAll(_session!.cookies);
+    clientRequest.headers.contentType = ContentType.json;
+    clientRequest.headers
+        .add("Authorization", "Bearer ${_session!.authorisationToken}");
+    clientRequest.headers.forEach((name, values) => print("$name:$values"));
+    HttpClientResponse clientResponse = await clientRequest.close();
+    _session!.cookies = clientResponse.cookies;
+    print(clientResponse.statusCode);
+    String responceData = await clientResponse.transform(utf8.decoder).join();
+    // return responceData;
+    XmlDocument document = XmlDocument.parse(responceData);
+    return document.rootElement
+        .findElements("resource")
+        .first
+        .findElements("content")
+        .first
+        .findElements("xsi:desktopProfileLibDto")
+        .first
+        .findAllElements("nickname")
+        .first
+        .innerText;
   }
 
   void dispose() {

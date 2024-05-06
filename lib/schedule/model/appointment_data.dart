@@ -1,23 +1,26 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:tumobile/schedule/model/event.dart';
 import 'package:tumobile/schedule/model/place.dart';
 
-class AppointmentData extends Event {
+class AppointmentData {
+  DateTime begin, end;
+  String name;
   Place place;
   List<Place> additionalPlaces = [];
   String description;
   String info;
 
   AppointmentData.empty()
-      : place = Place(),
+      : begin = DateTime.fromMicrosecondsSinceEpoch(0),
+        end = DateTime.fromMicrosecondsSinceEpoch(0),
+        name = "",
+        place = Place(),
         additionalPlaces = [],
         description = "",
-        info = "",
-        super.empty();
+        info = "";
 
-  AppointmentData(super.begin, super.end, super.name, this.place, this.info,
+  AppointmentData(this.begin, this.end, this.name, this.place, this.info,
       [this.description = "", additionalPlaces]);
 
   factory AppointmentData.fromJSON(String input) {

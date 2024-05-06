@@ -7,6 +7,8 @@ base class Session {
   String? _username, _password;
   List<Cookie>? _cookies;
 
+  String authorisationToken = ""; //till now required only to get users name
+
   Session.empty()
       : loginStatus = LoginStatus.unstated,
         _username = null,

@@ -9,9 +9,14 @@ class Appointment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double height = data.end.difference(data.begin).inMinutes * 1.15;
+    // DateTime now = DateTime.parse("20240502 16:30");
+    bool currentEvent =
+        DateTime.now().isAfter(data.begin) && DateTime.now().isBefore(data.end);
+    // bool currentEvent = true;
     return Card(
-      color: Theme.of(context).cardColor,
-      // color: const Color.fromRGBO(228, 228, 228, 1),
+      color: currentEvent
+          ? const Color.fromARGB(255, 225, 225, 255)
+          : Theme.of(context).cardColor,
       child: Padding(
         padding: const EdgeInsets.all(2.0),
         child: Row(
@@ -44,7 +49,8 @@ class Appointment extends StatelessWidget {
                       data.name,
                       maxLines: 1,
                       overflow: TextOverflow.fade,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),

@@ -6,7 +6,7 @@ class Themes {
   static final ThemeData lightTheme = ThemeData(
     primaryColor: AppColors.primaryColor,
     hintColor: AppColors.accentColor,
-    
+    cardColor: AppColors.cardColor,
   );
 
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
